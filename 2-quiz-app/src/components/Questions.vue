@@ -6,8 +6,7 @@
         :style="{ width: `${(questionsAnswered / questions.length) * 100}%` }"
       ></div>
       <div class="status">
-        {{ questionsAnswered }} out of {{ questionsAnswered.length }} questions
-        answered
+        {{ questionsAnswered }} out of {{ questions.length }} questions answered
       </div>
     </div>
     <transition-group name="fade">
