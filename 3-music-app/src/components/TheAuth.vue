@@ -56,133 +56,9 @@
           </ul>
 
           <!-- Login Form -->
-          <form v-show="tab === 'login'">
-            <!-- Email -->
-            <div class="mb-3">
-              <label class="inline-block mb-2">Email</label>
-              <input
-                class="block w-full py-1.5 px-3 text-gray-800 border border-gray-300 transition duration-500 focus:outline-none focus:border-black rounded"
-                placeholder="Enter Email"
-                type="email"
-              />
-            </div>
-            <!-- Password -->
-            <div class="mb-3">
-              <label class="inline-block mb-2">Password</label>
-              <input
-                class="block w-full py-1.5 px-3 text-gray-800 border border-gray-300 transition duration-500 focus:outline-none focus:border-black rounded"
-                placeholder="Password"
-                type="password"
-              />
-            </div>
-            <button
-              class="block w-full bg-purple-600 text-white py-1.5 px-3 rounded transition hover:bg-purple-700"
-              type="submit"
-            >
-              Submit
-            </button>
-          </form>
+          <LoginForm v-if="tab === 'login'" />
           <!-- Registration Form -->
-          <vee-form
-            v-show="tab === 'register'"
-            :validation-schema="schema"
-            :initial-values="userData"
-            @submit="register"
-          >
-            <!-- Name -->
-            <div class="mb-3">
-              <label class="inline-block mb-2">Name</label>
-              <VeeField
-                class="block w-full py-1.5 px-3 text-gray-800 border border-gray-300 transition duration-500 focus:outline-none focus:border-black rounded"
-                placeholder="Enter Name"
-                type="text"
-                name="name"
-              />
-              <ErrorMessage class="text-red-600" name="name" />
-            </div>
-            <!-- Email -->
-            <div class="mb-3">
-              <label class="inline-block mb-2">Email</label>
-              <VeeField
-                name="email"
-                class="block w-full py-1.5 px-3 text-gray-800 border border-gray-300 transition duration-500 focus:outline-none focus:border-black rounded"
-                placeholder="Enter Email"
-                type="email"
-              />
-              <ErrorMessage class="text-red-600" name="email" />
-            </div>
-            <!-- Age -->
-            <div class="mb-3">
-              <label class="inline-block mb-2">Age</label>
-              <VeeField
-                class="block w-full py-1.5 px-3 text-gray-800 border border-gray-300 transition duration-500 focus:outline-none focus:border-black rounded"
-                type="number"
-                placeholder="Enter Age"
-                name="age"
-              />
-              <ErrorMessage class="text-red-600" name="age" />
-            </div>
-            <!-- Password -->
-            <div class="mb-3">
-              <label class="inline-block mb-2">Password</label>
-              <vee-field name="password" :bails="false" v-slot="{ field, errors }">
-                <input
-                  class="block w-full py-1.5 px-3 text-gray-800 border border-gray-300 transition duration-500 focus:outline-none focus:border-black rounded"
-                  placeholder="Password"
-                  type="password"
-                  v-bind="field"
-                />
-                <div class="text-red-600" v-for="error in errors" :key="error">
-                  {{ error }}
-                </div>
-              </vee-field>
-              <ErrorMessage class="text-red-600" name="password" />
-            </div>
-            <!-- Confirm Password -->
-            <div class="mb-3">
-              <label class="inline-block mb-2">Confirm Password</label>
-              <VeeField
-                class="block w-full py-1.5 px-3 text-gray-800 border border-gray-300 transition duration-500 focus:outline-none focus:border-black rounded"
-                placeholder="Confirm Password"
-                type="password"
-                name="confirm_password"
-              />
-              <ErrorMessage class="text-red-600" name="confirm_password" />
-            </div>
-            <!-- Country -->
-            <div class="mb-3">
-              <label class="inline-block mb-2">Country</label>
-              <vee-field
-                as="select"
-                name="country"
-                class="block w-full py-1.5 px-3 text-gray-800 border border-gray-300 transition duration-500 focus:outline-none focus:border-black rounded"
-              >
-                <option value="USA">USA</option>
-                <option value="Mexico">Mexico</option>
-                <option value="Germany">Germany</option>
-                <option value="Antarctica">Antarctica</option>
-              </vee-field>
-              <ErrorMessage class="text-red-600" name="country" />
-            </div>
-            <!-- TOS -->
-            <div class="mb-3 pl-6">
-              <VeeField
-                id="checkbox"
-                class="w-4 h-4 float-left -ml-6 mt-1 rounded"
-                type="checkbox"
-                name="tos"
-                value="1"
-              />
-              <label for="checkbox" class="inline-block">Accept terms of service</label>
-              <ErrorMessage class="text-red-600 block" name="tos" />
-            </div>
-            <button
-              class="block w-full bg-purple-600 text-white py-1.5 px-3 rounded transition hover:bg-purple-700"
-              type="submit"
-            >
-              Submit
-            </button>
-          </vee-form>
+          <RegisterForm v-else />
         </div>
       </div>
     </div>
@@ -191,34 +67,27 @@
 
 <script>
 import { mapMutations, mapState } from "vuex";
+import LoginForm from "@/components/LoginForm.vue";
+import RegisterForm from "@/components/RegisterForm.vue";
 
 export default {
   name: "Auth",
+  components: {
+    LoginForm,
+    RegisterForm,
+  },
   data() {
     return {
       tab: "login",
-      schema: {
-        name: "required|min:3|max:100|alpha_spaces",
-        email: "required|min:3|max:100|email",
-        age: "required|min_value:18|max_value:100",
-        password: "required|min:3|max:100",
-        confirm_password: "passwords_mismatch:@password",
-        country: "required|country_excluded:Antarctica",
-        tos: "tos",
-      },
-      userData: {
-        country: "USA",
-      },
     };
   },
+
   computed: {
     ...mapState(["authModal"]),
   },
+
   methods: {
     ...mapMutations(["toggleAuthModal"]),
-    register(values) {
-      console.log(values);
-    },
   },
 };
 </script>
