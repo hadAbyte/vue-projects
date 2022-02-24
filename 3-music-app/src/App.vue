@@ -289,5 +289,9 @@ export default {
     TheHeader,
     TheAuth,
   },
+
+  created() {
+    this.$store.dispatch("init_login");
+  },
 };
 </script>

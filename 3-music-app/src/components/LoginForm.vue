@@ -59,17 +59,24 @@ export default {
   },
 
   methods: {
-    login(values) {
+    async login(values) {
       this.login_in_submission = true;
       this.login_show_alert = true;
       this.login_alert_variant = "bg-blue-500";
       this.login_alert_msg = "Please wait! We will be log you in once you verified.";
-      setTimeout((_) => {
-        this.login_alert_variant = "bg-green-500";
-        this.login_alert_msg = "Congrats! We log you in.";
-      }, 3000);
 
-      console.log(values);
+      try {
+        await this.$store.dispatch("login", values);
+      } catch {
+        this.login_in_submission = false;
+        this.login_alert_variant = "bg-red-500";
+        this.login_alert_msg = "An unexpected error occurs! Please try again.";
+        return;
+      }
+
+      this.login_alert_variant = "bg-green-500";
+      this.login_alert_msg = "Congrats! We log you in.";
+      window.location.reload();
     },
   },
 };
