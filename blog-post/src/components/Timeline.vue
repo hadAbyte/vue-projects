@@ -1,5 +1,7 @@
 <script lang="ts" setup>
-import {ref} from "vue";
+import {computed, onMounted, ref} from "vue";
+import {thisMonth, today} from "../post";
+import {DateTime} from "luxon";
 
 const periods = <const>['Today', 'This Week', 'This Month']
 
@@ -10,6 +12,22 @@ const selectedPeriod = ref<Period>('Today')
 function selectPeriod(period: Period) {
 	selectedPeriod.value = period
 }
+
+const posts = computed(() => {
+	return [today, thisMonth, thisMonth].map(post => {
+		return {
+			...post,
+			created: DateTime.fromISO(post.created)
+		}
+	}).filter(post => {
+		if (selectedPeriod.value === 'Today') {
+			return post.created >= DateTime.now().minus({day: 1})
+		}
+
+		return post
+	})
+})
+
 </script>
 
 <template>
@@ -26,5 +44,14 @@ function selectPeriod(period: Period) {
 				{{ period }}
 			</a>
 		</span>
+
+		<a
+				v-for="post in posts"
+				:key="post"
+				class="panel-block"
+		>
+			<a>{{ post.title }}</a>
+			<div>{{ post.created.toFormat('d MMM') }}</div>
+		</a>
 	</nav>
 </template>
