@@ -1,7 +1,11 @@
 <script lang="ts" setup>
-import { computed, ref } from 'vue';
-import { thisMonth, today } from '../post';
 import { DateTime } from 'luxon';
+import { ref, computed } from 'vue';
+import { TimelinePost, today, thisWeek, thisMonth } from '../posts';
+import { usePosts } from '../stores/posts';
+import TimelineItem from './TimelineItem.vue';
+
+const postsStore = usePosts();
 
 const periods = <const>['Today', 'This Week', 'This Month'];
 
@@ -13,8 +17,8 @@ function selectPeriod(period: Period) {
   selectedPeriod.value = period;
 }
 
-const posts = computed(() => {
-  return [today, thisMonth, thisMonth]
+const posts = computed<TimelinePost[]>(() => {
+  return [today, thisWeek, thisMonth]
     .map((post) => {
       return {
         ...post,
@@ -26,12 +30,19 @@ const posts = computed(() => {
         return post.created >= DateTime.now().minus({ day: 1 });
       }
 
+      if (selectedPeriod.value === 'This Week') {
+        return post.created >= DateTime.now().minus({ week: 1 });
+      }
+
       return post;
     });
 });
 </script>
 
 <template>
+  {{ postsStore.getState().foo }}
+  <button @click="postsStore.updateState('bar')">Update</button>
+
   <nav class="is-primary panel">
     <span class="panel-tabs">
       <a
@@ -40,19 +51,17 @@ const posts = computed(() => {
         :class="{
           'is-active': period === selectedPeriod,
         }"
-        @click="selectPeriod(period)"
+        v-on:click="selectPeriod(period)"
       >
         {{ period }}
       </a>
     </span>
 
-    <a
+    <TimelineItem
       v-for="post in posts"
-      :key="`${post}`"
+      :key="post.id"
+      :post="post"
       class="panel-block"
-    >
-      <a>{{ post.title }}</a>
-      <div>{{ post.created.toFormat('d MMM') }}</div>
-    </a>
+    />
   </nav>
 </template>
